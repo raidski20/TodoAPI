@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title')->unique();
             $table->text('description')->nullable();
             
-            $table->enum('status', ['in_progress', 'finished']);
+            $table->enum('status', \App\Enums\StatusType::getCasesValues());
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 

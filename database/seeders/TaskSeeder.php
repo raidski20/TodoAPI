@@ -2,11 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Enums\StatusType;
+use App\Models\Task;
 
 use App\Models\User;
-use App\Models\Task;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
 
 class TaskSeeder extends Seeder
 {
@@ -22,13 +23,13 @@ class TaskSeeder extends Seeder
                 'user_id' => $user->id,
                 'title' => 'First Task',
                 'description' => 'This is a test task 1',
-                'status' => 'in_progress',
+                'status' => StatusType::IN_PTOGRESS,
             ],
             [
                 'user_id' => $user->id,
                 'title' => 'Second Task',
                 'description' => 'This is a test task 2',
-                'status' => 'finished',
+                'status' => StatusType::FINISHED,
             ]
         ];
 
