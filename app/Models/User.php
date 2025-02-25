@@ -52,6 +52,6 @@ class User extends Authenticatable
     }
 
     public function labels() {
-        return $this->hasMany(labels::class);
+        return $this->hasMany(Label::class);
     }
 }
