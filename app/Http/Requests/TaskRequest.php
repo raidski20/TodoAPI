@@ -22,26 +22,13 @@ class TaskRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
+        return [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'status' => [
                 'required',
                 Rule::in(['in_progress', 'finished'])
             ]
-        ];
-
-        if($this->isMethod('post') && $this->route()->getName() === 'task.store') 
-            $rules = $rules + $this->store();
-
-        return $rules;
-    }
-
-
-    private function store(): array
-    {
-        return [
-            'user_id' => 'required|exists:users,id',
         ];
     }
 }
