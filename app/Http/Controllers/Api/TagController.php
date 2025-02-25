@@ -4,30 +4,32 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TagRequest;
+use App\Http\Resources\TagResource;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
 class tagController extends Controller
 {
+    use ResponseTrait;
     
     public function index(Request $request)
     {
         $tags = $request->user()->tags;
 
-        return response()->json([
-            'data' => $tags,
-            'message' => ''
-        ], 200);
+        return $this->sendSuccessResponse(
+            TagResource::collection($tags)
+        );
     }
 
     public function store(TagRequest $request)
     {
         $validated = $request->validated();
-        $tags = $request->user()->tags()->create($validated);
+        $tag = $request->user()->tags()->create($validated);
 
-        return response()->json([
-            'data' => $tags,
-            'message' => 'Success'
-        ], 200);
+        return $this->sendSuccessResponse(
+            new TagResource($tag),
+            'New Tag created.',
+        );
     }
 
     public function update(TagRequest $request, string $id)
@@ -36,12 +38,12 @@ class tagController extends Controller
 
         $validated = $request->validated();
 
-        $tag->update($validated);
+        $tag = $tag->update($validated);
 
-        return response()->json([
-            'data' => $tag,
-            'message' => 'Success'
-        ], 200);
+        return $this->sendSuccessResponse(
+            new TagResource($tag),
+            'Tag updated.',
+        );
     }
 
     public function destroy(string $id)
@@ -50,9 +52,8 @@ class tagController extends Controller
 
         $task->delete();
     
-        return response()->json([
-            'data' => '',
-            'message' => 'Task deleted successfully.',
-        ], 200);
+        return $this->sendSuccessResponse(
+            message: 'Tag deleted.',
+         );
     }
 }

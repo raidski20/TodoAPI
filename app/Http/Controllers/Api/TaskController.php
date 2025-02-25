@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskRequest;
+use App\Http\Resources\TaskResource;
+use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    use ResponseTrait;
+
     public function index(Request $request)
     {
         $query = $request->user()->tasks();
@@ -24,10 +28,9 @@ class TaskController extends Controller
             });
         }
 
-        return response()->json([
-            'data' => $query->get(),
-            'message' => ''
-        ], 200);
+        return $this->sendSuccessResponse(
+            TaskResource::collection($query->get())
+        );
     }
 
     public function store(TaskRequest $request)
@@ -35,10 +38,10 @@ class TaskController extends Controller
         $validated = $request->validated();
         $task = $request->user()->tasks()->create($validated);
 
-        return response()->json([
-            'data' => $task,
-            'message' => 'Success'
-        ], 200);
+        return $this->sendSuccessResponse(
+           new TaskResource($task),
+           'New Task created.',
+        );
     }
 
     public function update(TaskRequest $request, string $id)
@@ -47,12 +50,12 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
-        $task->update($validated);
+        $task = $task->update($validated);
 
-        return response()->json([
-            'data' => $task,
-            'message' => 'Success'
-        ], 200);
+        return $this->sendSuccessResponse(
+            new TaskResource($task),
+            'Task updated.',
+         );
     }
 
     public function destroy(string $id)
@@ -61,9 +64,8 @@ class TaskController extends Controller
 
         $task->delete();
     
-        return response()->json([
-            'data' => '',
-            'message' => 'Task deleted successfully.',
-        ], 200);
+        return $this->sendSuccessResponse(
+            message: 'Task deleted.',
+         );
     }
 }
