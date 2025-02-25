@@ -6,9 +6,9 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 use App\Models\User;
-use App\Models\Label;
+use App\Models\Tag;
 
-class LabelSeeder extends Seeder
+class TagSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,19 +17,19 @@ class LabelSeeder extends Seeder
     {
         $user = User::first();
 
-        $labels = [
+        $tags = [
             [
                 'user_id' => $user->id,
-                'name' => 'First Label'
+                'name' => 'Work'
             ],
             [
                 'user_id' => $user->id,
-                'name' => 'Second label'
+                'name' => 'Life'
             ]
         ];
 
-        foreach ($labels as $label) {
-            Label::create($label);
+        foreach ($tags as $tag) {
+            Tag::create($tag);
         }
     }
 }

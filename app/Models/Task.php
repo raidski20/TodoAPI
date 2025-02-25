@@ -12,7 +12,7 @@ class Task extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function labels() {
-        return $this->belongsToMany(Label::class, 'task_label');
+    public function tags() {
+        return $this->belongsToMany(Tag::class, 'task_tag');
     }
 }

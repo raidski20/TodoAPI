@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LabelRequest;
+use App\Http\Requests\TagRequest;
 use Illuminate\Http\Request;
 
-class LabelController extends Controller
+class tagController extends Controller
 {
     
     public function index(Request $request)
     {
-        $labels = $request->user()->labels;
+        $tags = $request->user()->tags;
 
         return response()->json([
-            'data' => $labels,
+            'data' => $tags,
             'message' => ''
         ], 200);
     }
 
-    public function store(LabelRequest $request)
+    public function store(TagRequest $request)
     {
         $validated = $request->validated();
-        $labels = $request->user()->labels()->create($validated);
+        $tags = $request->user()->tags()->create($validated);
 
         return response()->json([
-            'data' => $labels,
+            'data' => $tags,
             'message' => 'Success'
         ], 200);
     }
 
-    public function update(LabelRequest $request, string $id)
+    public function update(TagRequest $request, string $id)
     {
-        $label = $request->user()->labels()->findOrFail($id);
+        $tag = $request->user()->tags()->findOrFail($id);
 
         $validated = $request->validated();
 
-        $label->update($validated);
+        $tag->update($validated);
 
         return response()->json([
-            'data' => $label,
+            'data' => $tag,
             'message' => 'Success'
         ], 200);
     }
 
     public function destroy(string $id)
     {
-        $task = auth()->user()->labels()->findOrFail($id);
+        $task = auth()->user()->tags()->findOrFail($id);
 
         $task->delete();
     

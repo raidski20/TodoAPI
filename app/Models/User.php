@@ -51,7 +51,7 @@ class User extends Authenticatable
         return $this->hasMany(Task::class);
     }
 
-    public function labels() {
-        return $this->hasMany(Label::class);
+    public function tags() {
+        return $this->hasMany(Tag::class);
     }
 }

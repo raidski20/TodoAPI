@@ -17,10 +17,10 @@ class TaskController extends Controller
         }
             
 
-        if ($request->has('label')) 
+        if ($request->has('tag')) 
         {
-            $query->whereHas('labels', function ($q) use ($request) {
-                $q->where('name', $request->label);
+            $query->whereHas('tags', function ($q) use ($request) {
+                $q->where('name', $request->tag);
             });
         }
 
