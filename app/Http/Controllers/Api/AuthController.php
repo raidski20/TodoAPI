@@ -5,23 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Services\AuthService;
 use App\Traits\ResponseTrait;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     use ResponseTrait;
     
-    public function register(AuthRequest $request)
+    public function register(AuthService $authService, AuthRequest $request)
     {
         $validated = $request->validated();
 
-        $user = User::create([
-            "name" => $validated["name"],
-            "email" => $validated["email"],
-            'password' => Hash::make($validated["password"])
-        ]);
+        $user = $authService->registerUser($validated);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -30,26 +25,23 @@ class AuthController extends Controller
         );
     }
 
-    public function login(AuthRequest $request)
+    public function login(AuthService $authService, AuthRequest $request)
     {
         $validated = $request->validated();
-        
-        $user = User::where("email", $validated["email"])->first();
 
-        if (!$user || !Hash::check($validated["password"], $user->password)) 
-        {
+        $user = $authService->checkUser($validated);
+
+        if (!$user) {
             return $this->sendErrorResponse(
-                error: 'incorrect username or password',
+                error: 'Incorrect username or password',
                 code: 401
             );
         }
-        else
-        {
-            $token = $user->createToken('auth_token')->plainTextToken;
 
-            return $this->sendSuccessResponse(
-                new UserResource($user, $token),
-            );
-        }
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return $this->sendSuccessResponse(
+            new UserResource($user, $token),
+        );   
     }
 }
