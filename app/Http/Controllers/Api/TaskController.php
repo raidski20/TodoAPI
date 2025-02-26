@@ -34,9 +34,14 @@ class TaskController extends Controller
         );
     }
 
-    public function update(TaskRequest $request, string $id)
+    public function update(TaskRequest $request, TaskService $taskService, string $id)
     {
-        $task = $request->user()->tasks()->findOrFail($id);
+        /**
+         * 1- check if user owns the requested task
+         * 2- send error response when the task isn't found
+         */
+        $task = auth()->user()->tasks()->find($id);
+        $taskService->SendErrorRessponseIfResourceNull($task);
 
         $validated = $request->validated();
 
@@ -48,9 +53,10 @@ class TaskController extends Controller
          );
     }
 
-    public function destroy(string $id)
+    public function destroy(TaskService $taskService, string $id)
     {
-        $task = auth()->user()->tasks()->findOrFail($id);
+        $task = auth()->user()->tasks()->find($id);
+        $taskService->SendErrorRessponseIfResourceNull($task);
 
         $task->delete();
     

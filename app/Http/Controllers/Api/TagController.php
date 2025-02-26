@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TagRequest;
 use App\Http\Resources\TagResource;
+use App\Services\TagService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
@@ -32,9 +33,10 @@ class tagController extends Controller
         );
     }
 
-    public function update(TagRequest $request, string $id)
+    public function update(TagRequest $request,TagService $tagService, string $id)
     {
-        $tag = $request->user()->tags()->findOrFail($id);
+        $tag = auth()->user()->tags()->find($id);
+        $tagService->SendErrorRessponseIfResourceNull($tag);
 
         $validated = $request->validated();
 
@@ -46,11 +48,12 @@ class tagController extends Controller
         );
     }
 
-    public function destroy(string $id)
+    public function destroy(TagService $tagService, string $id)
     {
-        $task = auth()->user()->tags()->findOrFail($id);
+        $tag = auth()->user()->tags()->find($id);
+        $tagService->SendErrorRessponseIfResourceNull($tag);
 
-        $task->delete();
+        $tag->delete();
     
         return $this->sendSuccessResponse(
             message: 'Tag deleted.',
