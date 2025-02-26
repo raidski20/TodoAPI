@@ -16,20 +16,33 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
+        $firstUser = User::find(1);
+        $secondUser = User::find(2);
 
         $tasks = [
             [
-                'user_id' => $user->id,
+                'user_id' => $firstUser->id,
                 'title' => 'First Task',
-                'description' => 'This is a test task 1',
+                'description' => 'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
                 'status' => StatusType::IN_PTOGRESS,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $firstUser->id,
                 'title' => 'Second Task',
-                'description' => 'This is a test task 2',
+                'description' => '',
                 'status' => StatusType::FINISHED,
+            ],
+            [
+                'user_id' => $secondUser->id,
+                'title' => 'Third Task',
+                'description' => '',
+                'status' => StatusType::IN_PTOGRESS,
+            ],
+            [
+                'user_id' => $secondUser->id,
+                'title' => 'Fourth Task',
+                'description' => 'Lorem Ipsum has been the industrys standard dummy text ever since the 1500s',
+                'status' => StatusType::IN_PTOGRESS,
             ]
         ];
 

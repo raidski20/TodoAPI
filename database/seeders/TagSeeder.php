@@ -15,16 +15,25 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
+        $firstUser = User::find(1);
+        $secondUser = User::find(2);
 
         $tags = [
             [
-                'user_id' => $user->id,
-                'name' => 'Work'
+                'user_id' => $firstUser->id,
+                'name' => 'work'
             ],
             [
-                'user_id' => $user->id,
-                'name' => 'Life'
+                'user_id' => $firstUser->id,
+                'name' => 'gym'
+            ],
+            [
+                'user_id' => $secondUser->id,
+                'name' => 'sports'
+            ],
+            [
+                'user_id' => $secondUser->id,
+                'name' => 'life'
             ]
         ];
 
