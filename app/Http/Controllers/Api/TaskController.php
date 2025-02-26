@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
+use App\Services\TaskService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
@@ -12,30 +13,19 @@ class TaskController extends Controller
 {
     use ResponseTrait;
 
-    public function index(Request $request)
+    public function index(TaskService $taskService, Request $request)
     {
-        $query = $request->user()->tasks();
-
-        if ($request->has('status')) {
-            $query->where('status', $request->status);
-        }
-            
-
-        if ($request->has('tag')) 
-        {
-            $query->whereHas('tags', function ($q) use ($request) {
-                $q->where('name', $request->tag);
-            });
-        }
+        $tasks = $taskService->getUserTasks($request);
 
         return $this->sendSuccessResponse(
-            TaskResource::collection($query->get())
+            TaskResource::collection($tasks)
         );
     }
 
     public function store(TaskRequest $request)
     {
         $validated = $request->validated();
+        
         $task = $request->user()->tasks()->create($validated);
 
         return $this->sendSuccessResponse(

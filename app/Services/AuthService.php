@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use PhpParser\Node\Expr\BinaryOp\BooleanOr;
 
 class AuthService {
 
