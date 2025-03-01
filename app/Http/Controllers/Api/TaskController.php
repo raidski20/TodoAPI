@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\TaskRepositoryInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskRequest;
 use App\Http\Resources\TaskResource;
-use App\Services\TaskService;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\Request;
 
@@ -13,9 +13,16 @@ class TaskController extends Controller
 {
     use ResponseTrait;
 
-    public function index(TaskService $taskService, Request $request)
+    public function __construct(
+        protected TaskRepositoryInterface $taskRepository
+    ) {}
+
+    public function index(Request $request)
     {
-        $tasks = $taskService->getUserTasks($request);
+        $tasks = $this->taskRepository->getAllTasks(
+            $request->query('status'),
+            $request->query('tag')
+        );
 
         return $this->sendSuccessResponse(
             TaskResource::collection($tasks)
@@ -26,26 +33,19 @@ class TaskController extends Controller
     {
         $validated = $request->validated();
         
-        $task = $request->user()->tasks()->create($validated);
+        $task = $this->taskRepository->createTask($validated);
 
         return $this->sendSuccessResponse(
            new TaskResource($task),
-           'New Task created.',
+           'Task created.',
         );
     }
 
-    public function update(TaskRequest $request, TaskService $taskService, string $id)
+    public function update(TaskRequest $request, $id)
     {
-        /**
-         * 1- check if user owns the requested task
-         * 2- send error response when the task isn't found
-         */
-        $task = auth()->user()->tasks()->find($id);
-        $taskService->SendErrorRessponseIfResourceNull($task);
-
         $validated = $request->validated();
 
-        $task = $task->update($validated);
+        $task = $this->taskRepository->updateTask($id, $validated);
 
         return $this->sendSuccessResponse(
             new TaskResource($task),
@@ -53,12 +53,9 @@ class TaskController extends Controller
          );
     }
 
-    public function destroy(TaskService $taskService, string $id)
+    public function destroy($id)
     {
-        $task = auth()->user()->tasks()->find($id);
-        $taskService->SendErrorRessponseIfResourceNull($task);
-
-        $task->delete();
+        $this->taskRepository->deleteTask($id);
     
         return $this->sendSuccessResponse(
             message: 'Task deleted.',

@@ -27,7 +27,7 @@ class TaskRequest extends FormRequest
             'description' => 'nullable|string',
             'status' => [
                 'required',
-                Rule::in(['in_progress', 'finished'])
+                Rule::in(\App\Enums\StatusType::getCasesValues())
             ]
         ];
     }
