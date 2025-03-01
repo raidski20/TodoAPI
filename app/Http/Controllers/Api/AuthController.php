@@ -2,21 +2,25 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\AuthRepositoryInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuthRequest;
 use App\Http\Resources\UserResource;
-use App\Services\AuthService;
 use App\Traits\ResponseTrait;
 
 class AuthController extends Controller
 {
     use ResponseTrait;
+
+    public function __construct(
+        protected AuthRepositoryInterface $authRepository
+    ) {}
     
-    public function register(AuthService $authService, AuthRequest $request)
+    public function register(AuthRequest $request)
     {
         $validated = $request->validated();
 
-        $user = $authService->registerUser($validated);
+        $user = $this->authRepository->createUser($validated);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -25,11 +29,11 @@ class AuthController extends Controller
         );
     }
 
-    public function login(AuthService $authService, AuthRequest $request)
+    public function login(AuthRequest $request)
     {
         $validated = $request->validated();
 
-        $user = $authService->checkUser($validated);
+        $user = $this->authRepository->checkUser($validated);
 
         if (!$user) {
             return $this->sendErrorResponse(
