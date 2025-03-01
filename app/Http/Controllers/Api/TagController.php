@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\TagRepositoryInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TagRequest;
 use App\Http\Resources\TagResource;
-use App\Services\TagService;
 use App\Traits\ResponseTrait;
-use Illuminate\Http\Request;
 
 class tagController extends Controller
 {
     use ResponseTrait;
     
-    public function index(Request $request)
+    public function __construct(
+        protected TagRepositoryInterface $tagRepository
+    ) {}
+
+    public function index()
     {
-        $tags = $request->user()->tags;
+        $tags = $this->tagRepository->getAllTags();
 
         return $this->sendSuccessResponse(
             TagResource::collection($tags)
@@ -25,22 +28,20 @@ class tagController extends Controller
     public function store(TagRequest $request)
     {
         $validated = $request->validated();
-        $tag = $request->user()->tags()->create($validated);
+
+        $tag = $this->tagRepository->createTag($validated);
 
         return $this->sendSuccessResponse(
             new TagResource($tag),
-            'New Tag created.',
+            'Tag created.',
         );
     }
 
-    public function update(TagRequest $request,TagService $tagService, string $id)
+    public function update(TagRequest $request, $id)
     {
-        $tag = auth()->user()->tags()->find($id);
-        $tagService->SendErrorRessponseIfResourceNull($tag);
-
         $validated = $request->validated();
 
-        $tag = $tag->update($validated);
+        $tag = $this->tagRepository->updateTag($id, $validated);
 
         return $this->sendSuccessResponse(
             new TagResource($tag),
@@ -48,13 +49,10 @@ class tagController extends Controller
         );
     }
 
-    public function destroy(TagService $tagService, string $id)
+    public function destroy($id)
     {
-        $tag = auth()->user()->tags()->find($id);
-        $tagService->SendErrorRessponseIfResourceNull($tag);
+        $this->tagRepository->deleteTag($id);
 
-        $tag->delete();
-    
         return $this->sendSuccessResponse(
             message: 'Tag deleted.',
          );
